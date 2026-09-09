@@ -52,6 +52,7 @@ void _toggleCompleted(int index, bool? value) {
   setState(() {
     _assignments[index]['completed'] = value ?? false;
   });
+
 }
 
 @override
@@ -62,7 +63,8 @@ void _toggleCompleted(int index, bool? value) {
         itemCount: _assignments.length,
         itemBuilder: (context, index) {
           return CheckboxListTile(
-            title: Text(_assignments[index]['title']),
+            title: Text(_assignments[index]['title'],
+            style: _assignments[index]['completed'] == true ? TextStyle( decoration: TextDecoration.lineThrough,): TextStyle()),
             value: _assignments[index]['completed'],
             onChanged: (value) => _toggleCompleted(index, value),
           );
