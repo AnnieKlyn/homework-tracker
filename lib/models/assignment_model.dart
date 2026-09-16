@@ -1,10 +1,10 @@
 class Assignment {
     final String title;
     bool isCompleted;
-    final dateTime;
+    final DateTime? dateTime;
     Assignment({
         required this.title,
-        required this.dateTime,
+        this.dateTime,
         this.isCompleted = false,
     });
 }

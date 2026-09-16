@@ -14,7 +14,7 @@ class _AssignmentListScreenState extends State<AssignmentListScreen> {
 
 void _showAddAssignmentDialog() {
   String newAssignmentTitle = '';
-
+  DateTime? newAssignmentDate;
   showDialog(
     context: context,
     builder: (context) {
@@ -28,15 +28,39 @@ void _showAddAssignmentDialog() {
           },
           ),
           actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('Cancel'),
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text('Cancel'),
+            ),
+            TextButton(
+              onPressed: (){
+                showDatePicker(
+                  context: context,
+                  initialDate: DateTime.now(),
+                  firstDate: DateTime(2000),
+                  lastDate: DateTime(2100),
+                ).then((selectedDate) {
+                  if (selectedDate != null) {
+                    setState(() {
+                      newAssignmentDate = selectedDate;
+                    });
+                  }
+                });
+              },
+              child: const Text('Select Due Date'),
           ),
           TextButton(
             onPressed: () {
               if (newAssignmentTitle.trim().isNotEmpty) {
-                ///
-                _presenter.addAssignment(newAssignmentTitle.trim(), DateTime.now());
+                if (newAssignmentDate != null) {
+                  setState(() {
+                    _presenter.addAssignment(newAssignmentTitle.trim(), dateTime: newAssignmentDate);
+                  });
+                } else {
+                  setState(() {
+                    _presenter.addAssignment(newAssignmentTitle.trim());
+                  });
+                } 
               }
               Navigator.pop(context);
             },
@@ -60,7 +84,7 @@ void _showAddAssignmentDialog() {
         itemBuilder: (context, index) {
           final assignment = assignments[index];
           return CheckboxListTile(
-            title: Text(assignment.title,
+            title: Text('${assignment.title} (Due: ${assignment.dateTime != null ? assignment.dateTime!.toLocal().toString().split(' ')[0] : 'No due date'})',
             style: assignment.isCompleted == true ? 
             TextStyle( decoration: TextDecoration.lineThrough,): TextStyle()),
             value: assignment.isCompleted,

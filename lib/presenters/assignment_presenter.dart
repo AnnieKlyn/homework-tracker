@@ -5,7 +5,7 @@ class AssignmentPresenter {
 
     List<Assignment> get assignments => _assignments;
 
-    void addAssignment(String title, DateTime dateTime) {
+    void addAssignment(String title, {DateTime? dateTime}) {
         _assignments.add(Assignment(title: title, dateTime: dateTime));
     }
     
