@@ -3,11 +3,12 @@ import 'package:flutter/material.dart';
 import 'main_navigation.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'firebase_options.dart';
 import 'views/login_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp();
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform,);
   runApp(const HomeworkTrackerApp());
 }
 
@@ -40,6 +41,7 @@ class SplashScreen extends StatefulWidget{
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const Scaffold(
+            backgroundColor: Colors.purple,
             body: Center(
               child: Text(
                 'Homework Tracker',
