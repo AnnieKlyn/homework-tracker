@@ -1,10 +1,14 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'main_navigation.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'views/login_screen.dart';
 
-
-void main() {
-    runApp(const HomeworkTrackerApp());
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp();
+  runApp(const HomeworkTrackerApp());
 }
 
 
@@ -26,9 +30,35 @@ class HomeworkTrackerApp extends StatelessWidget{
 class SplashScreen extends StatefulWidget{
   const SplashScreen({super.key});
 
-
   @override
   State<SplashScreen> createState() => _SplashScreenState();
+
+  
+  Widget build(BuildContext context) {
+    return StreamBuilder<User?>(
+      stream: FirebaseAuth.instance.authStateChanges(),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const Scaffold(
+            body: Center(
+              child: Text(
+                'Homework Tracker',
+                style: TextStyle(
+                  fontSize: 28,
+                  color: Colors.purple,
+                  fontWeight: FontWeight.bold,
+                )
+              ),
+            ),
+          );
+        }
+        if (snapshot.hasData) {
+          return const MainNavigationScreen();
+        }
+        return const LoginScreen();
+      },
+    );
+  }
 }
 
 
