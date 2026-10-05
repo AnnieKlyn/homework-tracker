@@ -11,6 +11,19 @@ class AssignmentListScreen extends StatefulWidget{
 
 class _AssignmentListScreenState extends State<AssignmentListScreen> {
   final AssignmentPresenter _presenter = AssignmentPresenter();
+  bool _isLoading = true;
+
+  @override
+  void initState(){
+    super.initState();
+    _loadAssignments();
+  }
+
+  Future<void> _loadAssignments() async {
+    await _presenter.loadAssignments();
+    setState(() => _isLoading = false);
+    
+  }
 
 void _showAddAssignmentDialog() {
   String newAssignmentTitle = '';
@@ -50,17 +63,10 @@ void _showAddAssignmentDialog() {
               child: const Text('Select Due Date'),
           ),
           TextButton(
-            onPressed: () {
+            onPressed: () async {
               if (newAssignmentTitle.trim().isNotEmpty) {
-                if (newAssignmentDate != null) {
-                  setState(() {
-                    _presenter.addAssignment(newAssignmentTitle.trim(), dateTime: newAssignmentDate);
-                  });
-                } else {
-                  setState(() {
-                    _presenter.addAssignment(newAssignmentTitle.trim());
-                  });
-                } 
+                await _presenter.addAssignment(newAssignmentTitle.trim(), dateTime: newAssignmentDate);
+                setState(() {});
               }
               Navigator.pop(context);
             },
@@ -79,23 +85,24 @@ void _showAddAssignmentDialog() {
     final assignments = _presenter.assignments;
     return Scaffold(
       appBar:AppBar(title: const Text('Assignments')),
-      body: ListView.builder(
-        itemCount: assignments.length,
-        itemBuilder: (context, index) {
-          final assignment = assignments[index];
-          return CheckboxListTile(
-            title: Text('${assignment.title} (Due: ${assignment.dateTime != null ? assignment.dateTime!.toLocal().toString().split(' ')[0] : 'No due date'})',
-            style: assignment.isCompleted == true ? 
-            TextStyle( decoration: TextDecoration.lineThrough,): TextStyle()),
-            value: assignment.isCompleted,
-            onChanged: (value) {
-              setState(() {
-                _presenter.toggleCompleted(index);
-              });
+      body: 
+        _isLoading
+          ? const Center(child: CircularProgressIndicator())
+          : ListView.builder(
+            itemCount: assignments.length,
+            itemBuilder: (context, index) {
+              final assignment = assignments[index];
+              return CheckboxListTile(
+                title: Text('${assignment.title} (Due: ${assignment.dateTime != null ? assignment.dateTime!.toLocal().toString().split(' ')[0] : 'No due date'})',
+                style: assignment.isCompleted == true ? TextStyle(decoration: TextDecoration.lineThrough,): TextStyle()),
+                value: assignment.isCompleted,
+                onChanged: (_) async {
+                  await _presenter.toggleCompleted(index);
+                  setState(() {});
+                },
+              );
             },
-          );
-        },        
-      ),
+            ),
       floatingActionButton: FloatingActionButton(
         onPressed: _showAddAssignmentDialog,
         child: const Icon(Icons.add),

@@ -47,6 +47,7 @@ class DefaultFirebaseOptions {
     projectId: 'homework-trackerer',
     authDomain: 'homework-trackerer.firebaseapp.com',
     storageBucket: 'homework-trackerer.firebasestorage.app',
+    databaseURL: 'https://homework-trackerer-default-rtdb.firebaseio.com/',
   );
 
   static const FirebaseOptions android = FirebaseOptions(
