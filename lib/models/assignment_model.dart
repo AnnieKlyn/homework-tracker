@@ -6,11 +6,13 @@ class Assignment {
     final String title;
     bool isCompleted;
     final DateTime? dateTime;
+    final String courseName;
   
     Assignment({
         required this.title,
         this.isCompleted = false,
         this.dateTime,
+        required this.courseName,
     });
 
     static final _db = FirebaseDatabase.instance.ref();
@@ -31,6 +33,7 @@ class Assignment {
             title: value['title'],
             isCompleted: value['isCompleted'],
             dateTime: DateTime.tryParse(value['dateTime']),
+            courseName: value['courseName'] ?? 'Unknown',
           ));
         });
       }
@@ -41,7 +44,7 @@ class Assignment {
       }
     }
 
-    static Future<void> addAssignment(String title, {DateTime? dateTime}) async {
+    static Future<void> addAssignment(String title, String courseName, {DateTime? dateTime}) async {
       final userId = _auth.currentUser?.uid;
       if (userId == null) return;
 
@@ -50,6 +53,7 @@ class Assignment {
         'title': title,
         'dateTime': dateTime.toString(),
         'isCompleted': false,
+        'courseName': courseName,
       });
     }
 
